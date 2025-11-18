@@ -9,11 +9,11 @@
     <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/minified/html5-qrcode.min.js"></script>
     <style>
         :root {
-            --primary: #926C15; /* SATIN SHEEN - GOLDEN BROWN */
-            --secondary: #C9980B; /* MIKADO - GOLD */
-            --accent: #FFC300; /* NAPLES - YELLOW */
-            --light-yellow: #FFD235; /* YELLOW */
-            --bright-yellow: #FFE169; /* SUNGLOW */
+            --primary: #926C15;
+            --secondary: #C9980B;
+            --accent: #FFC300;
+            --light-yellow: #FFD235;
+            --bright-yellow: #FFE169;
             --light: #f8f9fa;
             --dark: #343a40;
             --success: #28a745;
@@ -83,6 +83,7 @@
             width: 100px;
             height: 100px;
             border-radius: 50%;
+            border: 3px solid white;
         }
 
         .header-content {
@@ -161,6 +162,23 @@
             border: 2px solid var(--primary);
             border-radius: var(--border-radius);
             overflow: hidden;
+            position: relative;
+            min-height: 300px;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #qr-reader img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+
+        .scanner-placeholder {
+            color: #6c757d;
+            font-style: italic;
+            padding: 20px;
         }
 
         .scanner-controls {
@@ -171,7 +189,7 @@
         }
 
         .scanner-btn {
-            padding: 10px 20px;
+            padding: 12px 24px;
             border-radius: 50px;
             border: none;
             font-weight: 600;
@@ -180,6 +198,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            font-size: 1rem;
         }
 
         .start-btn {
@@ -202,6 +221,15 @@
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
+        }
+
+        .camera-select {
+            margin: 15px 0;
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            width: 100%;
+            max-width: 300px;
         }
 
         .result-section {
@@ -230,11 +258,17 @@
             padding: 20px;
             margin-bottom: 20px;
             border: 2px dashed #dee2e6;
-            min-height: 100px;
+            min-height: 120px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            transition: var(--transition);
+        }
+
+        .scanned-name-container.scanned {
+            border-color: var(--success);
+            background: rgba(40, 167, 69, 0.05);
         }
 
         .scanned-name {
@@ -242,6 +276,7 @@
             font-weight: 700;
             color: var(--primary);
             margin: 10px 0;
+            display: none;
         }
 
         .placeholder-text {
@@ -255,6 +290,12 @@
             margin-top: 20px;
             font-weight: 600;
             display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .status-success {
@@ -291,6 +332,8 @@
         .history-list {
             max-height: 300px;
             overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 8px;
         }
 
         .history-item {
@@ -299,6 +342,11 @@
             align-items: center;
             padding: 12px 15px;
             border-bottom: 1px solid #eee;
+            transition: var(--transition);
+        }
+
+        .history-item:hover {
+            background: #f8f9fa;
         }
 
         .history-item:last-child {
@@ -319,15 +367,21 @@
             background: var(--danger);
             color: white;
             border: none;
-            padding: 8px 15px;
+            padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
             margin-top: 15px;
             font-size: 0.9rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-left: auto;
         }
 
         .clear-history:hover {
             background: #c82333;
+            transform: translateY(-2px);
         }
 
         footer {
@@ -337,6 +391,10 @@
             color: var(--dark);
             opacity: 0.7;
             font-size: 0.9rem;
+        }
+
+        .scan-sound {
+            display: none;
         }
 
         @media (max-width: 768px) {
@@ -365,6 +423,17 @@
             .scanned-name {
                 font-size: 1.5rem;
             }
+            
+            .scanner-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .scanner-btn {
+                width: 100%;
+                max-width: 200px;
+                justify-content: center;
+            }
         }
 
         @media (min-width: 992px) {
@@ -386,7 +455,7 @@
         <header>
             <div class="logo-container">
                 <div class="logo">
-                    <img src="LOGO.png" alt="Church Logo">
+                    <img src="LOGO.png" alt="Church Logo" onerror="this.style.display='none'">
                 </div>
             </div>
             <div class="header-content">
@@ -403,7 +472,18 @@
                 <h2 class="scanner-title">
                     <i class="fas fa-qrcode"></i> QR Code Scanner
                 </h2>
-                <div id="qr-reader"></div>
+                
+                <div id="qr-reader">
+                    <div class="scanner-placeholder">
+                        <i class="fas fa-camera fa-2x" style="margin-bottom: 10px;"></i>
+                        <div>Camera scanner will appear here</div>
+                    </div>
+                </div>
+                
+                <select id="cameraSelect" class="camera-select" style="display: none;">
+                    <option value="">Select Camera</option>
+                </select>
+                
                 <div class="scanner-controls">
                     <button id="startScanner" class="scanner-btn start-btn">
                         <i class="fas fa-play"></i> Start Scanner
@@ -418,7 +498,7 @@
                 <h2 class="result-title">
                     <i class="fas fa-user-check"></i> Scanned Participant
                 </h2>
-                <div class="scanned-name-container">
+                <div class="scanned-name-container" id="nameContainer">
                     <div class="placeholder-text">Scan a QR code to see participant name</div>
                     <div id="scannedName" class="scanned-name"></div>
                 </div>
@@ -447,6 +527,11 @@
         </footer>
     </div>
 
+    <!-- Scan sound effect -->
+    <audio id="scanSound" class="scan-sound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-scanning-sci-fi-905.mp3" type="audio/mpeg">
+    </audio>
+
     <script>
         // Set current year in footer
         document.getElementById('currentYear').textContent = new Date().getFullYear();
@@ -455,53 +540,118 @@
         let html5QrcodeScanner;
         let isScanning = false;
         let scanHistory = JSON.parse(localStorage.getItem('scanHistory')) || [];
+        let currentCameraId = null;
 
         // Initialize the scanner
-        function initScanner() {
-            html5QrcodeScanner = new Html5Qrcode("qr-reader");
-            
-            // Display previous scan history
-            displayScanHistory();
+        async function initScanner() {
+            try {
+                // Get available cameras
+                const cameras = await Html5Qrcode.getCameras();
+                const cameraSelect = document.getElementById('cameraSelect');
+                
+                if (cameras && cameras.length > 0) {
+                    // Populate camera select
+                    cameras.forEach(camera => {
+                        const option = document.createElement('option');
+                        option.value = camera.id;
+                        option.text = camera.label || `Camera ${cameraSelect.length}`;
+                        cameraSelect.appendChild(option);
+                    });
+                    
+                    cameraSelect.style.display = 'block';
+                    
+                    // Set default camera
+                    currentCameraId = cameras[0].id;
+                    cameraSelect.value = currentCameraId;
+                    
+                    // Add change event listener
+                    cameraSelect.addEventListener('change', function() {
+                        currentCameraId = this.value;
+                        if (isScanning) {
+                            stopScanner().then(() => {
+                                startScanner();
+                            });
+                        }
+                    });
+                } else {
+                    console.warn('No cameras found');
+                    showVerificationStatus(false, "No camera found on this device");
+                }
+                
+                // Display previous scan history
+                displayScanHistory();
+            } catch (err) {
+                console.error('Error initializing scanner:', err);
+                showVerificationStatus(false, "Error accessing camera: " + err.message);
+            }
         }
 
         // Start scanning
         async function startScanner() {
             try {
-                // Check if camera is available
-                const cameras = await Html5Qrcode.getCameras();
-                if (cameras && cameras.length) {
-                    const cameraId = cameras[0].id;
-                    
-                    // Start the scanner
-                    await html5QrcodeScanner.start(
-                        cameraId,
-                        {
-                            fps: 10,
-                            qrbox: { width: 250, height: 250 }
-                        },
-                        onScanSuccess,
-                        onScanFailure
-                    );
-                    
-                    isScanning = true;
-                    updateScannerControls();
-                    console.log("QR Scanner started successfully");
-                } else {
-                    alert("No camera found. Please check your device permissions.");
+                if (!currentCameraId) {
+                    const cameras = await Html5Qrcode.getCameras();
+                    if (cameras && cameras.length) {
+                        currentCameraId = cameras[0].id;
+                    } else {
+                        throw new Error('No camera available');
+                    }
                 }
+
+                // Clear previous scanner if exists
+                const qrReader = document.getElementById('qr-reader');
+                qrReader.innerHTML = '';
+                
+                // Create new scanner instance
+                html5QrcodeScanner = new Html5Qrcode("qr-reader");
+                
+                // Start the scanner
+                await html5QrcodeScanner.start(
+                    currentCameraId,
+                    {
+                        fps: 10,
+                        qrbox: { width: 250, height: 250 },
+                        aspectRatio: 1.0
+                    },
+                    onScanSuccess,
+                    onScanFailure
+                );
+                
+                isScanning = true;
+                updateScannerControls();
+                console.log("QR Scanner started successfully with camera:", currentCameraId);
+                
             } catch (err) {
                 console.error("Error starting scanner:", err);
-                alert("Error starting scanner: " + err.message);
+                let errorMessage = "Error starting scanner: " + err.message;
+                
+                if (err.message.includes('Permission')) {
+                    errorMessage = "Camera permission denied. Please allow camera access and try again.";
+                } else if (err.message.includes('NotFoundError')) {
+                    errorMessage = "No camera found on this device.";
+                }
+                
+                showVerificationStatus(false, errorMessage);
+                
+                // Reset scanner state
+                isScanning = false;
+                updateScannerControls();
             }
         }
 
         // Stop scanning
         async function stopScanner() {
             try {
-                await html5QrcodeScanner.stop();
-                isScanning = false;
-                updateScannerControls();
-                console.log("QR Scanner stopped");
+                if (html5QrcodeScanner && isScanning) {
+                    await html5QrcodeScanner.stop();
+                    isScanning = false;
+                    updateScannerControls();
+                    console.log("QR Scanner stopped");
+                    
+                    // Clear scanner view
+                    const qrReader = document.getElementById('qr-reader');
+                    qrReader.innerHTML = '<div class="scanner-placeholder"><i class="fas fa-camera fa-2x" style="margin-bottom: 10px;"></i><div>Camera scanner will appear here</div></div>';
+                }
             } catch (err) {
                 console.error("Error stopping scanner:", err);
             }
@@ -510,6 +660,9 @@
         // Handle successful scan
         function onScanSuccess(decodedText, decodedResult) {
             console.log("QR Code scanned:", decodedText);
+            
+            // Play scan sound
+            playScanSound();
             
             // Display the scanned name
             displayScannedName(decodedText);
@@ -520,25 +673,46 @@
             // Show success message
             showVerificationStatus(true, "Participant verified successfully!");
             
-            // Optional: Stop scanner after successful scan
-            // stopScanner();
+            // Optional: Stop scanner after successful scan to prevent multiple scans
+            // setTimeout(() => stopScanner(), 1000);
         }
 
         // Handle scan failure
         function onScanFailure(error) {
-            // This is expected to be called often as it will fail when no QR code is visible
-            // We don't need to handle this unless we want to show specific errors
+            // Expected to be called often when no QR code is visible
+            // We can ignore most of these errors
+            if (!error.includes('NotFoundException')) {
+                console.log('Scan error:', error);
+            }
+        }
+
+        // Play scan sound
+        function playScanSound() {
+            try {
+                const scanSound = document.getElementById('scanSound');
+                scanSound.currentTime = 0;
+                scanSound.play().catch(e => console.log('Could not play scan sound:', e));
+            } catch (err) {
+                console.log('Error playing scan sound:', err);
+            }
         }
 
         // Display scanned name
         function displayScannedName(name) {
             const scannedNameElement = document.getElementById('scannedName');
-            const placeholderElement = scannedNameElement.previousElementSibling;
+            const nameContainer = document.getElementById('nameContainer');
+            const placeholderElement = nameContainer.querySelector('.placeholder-text');
             
             // Hide placeholder and show name
-            placeholderElement.style.display = 'none';
+            if (placeholderElement) placeholderElement.style.display = 'none';
             scannedNameElement.textContent = name;
             scannedNameElement.style.display = 'block';
+            nameContainer.classList.add('scanned');
+            
+            // Remove scanned class after 5 seconds
+            setTimeout(() => {
+                nameContainer.classList.remove('scanned');
+            }, 5000);
         }
 
         // Show verification status
@@ -550,10 +724,10 @@
             statusElement.className = `verification-status ${isSuccess ? 'status-success' : 'status-error'}`;
             statusElement.style.display = 'block';
             
-            // Hide after 3 seconds
+            // Hide after 5 seconds
             setTimeout(() => {
                 statusElement.style.display = 'none';
-            }, 3000);
+            }, 5000);
         }
 
         // Add to scan history
@@ -607,9 +781,11 @@
             if (isScanning) {
                 startBtn.disabled = true;
                 stopBtn.disabled = false;
+                startBtn.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Scanning...';
             } else {
                 startBtn.disabled = false;
                 stopBtn.disabled = true;
+                startBtn.innerHTML = '<i class="fas fa-play"></i> Start Scanner';
             }
         }
 
@@ -625,20 +801,31 @@
             // Test with sample data (for demonstration)
             document.addEventListener('keypress', function(e) {
                 // Press 'T' key to test with sample data
-                if (e.key === 't' || e.key === 'T') {
+                if ((e.key === 't' || e.key === 'T') && e.ctrlKey) {
                     const testNames = [
                         "John Smith", 
                         "Maria Garcia", 
                         "David Johnson", 
                         "Sarah Williams", 
-                        "Michael Brown"
+                        "Michael Brown",
+                        "Emily Davis",
+                        "James Wilson",
+                        "Lisa Anderson"
                     ];
                     const randomName = testNames[Math.floor(Math.random() * testNames.length)];
                     displayScannedName(randomName);
                     addToHistory(randomName);
-                    showVerificationStatus(true, "Participant verified successfully!");
+                    showVerificationStatus(true, "Test scan completed successfully!");
+                    playScanSound();
                 }
             });
+            
+            // Add instructions
+            console.log("QR Scanner Instructions:");
+            console.log("- Click 'Start Scanner' to begin scanning");
+            console.log("- Point camera at QR code containing participant name");
+            console.log("- Press Ctrl+T to test with random name");
+            console.log("- Scan history is saved automatically");
         });
     </script>
 </body>
