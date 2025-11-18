@@ -4,12 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Church Anniversary Registration</title>
+    <link rel="icon" type="image/x-icon" href="LOGO.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #4a6fa5;
-            --secondary: #6b8cbc;
-            --accent: #ffb347;
+            --primary: #926C15; /* SATIN SHEEN - GOLDEN BROWN */
+            --secondary: #C9980B; /* MIKADO - GOLD */
+            --accent: #FFC300; /* NAPLES - YELLOW */
+            --light-yellow: #FFD235; /* YELLOW */
+            --bright-yellow: #FFE169; /* SUNGLOW */
             --light: #f8f9fa;
             --dark: #343a40;
             --success: #28a745;
@@ -32,10 +35,15 @@
             line-height: 1.6;
             min-height: 100vh;
             padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
         .container {
             max-width: 500px;
+            width: 100%;
             margin: 0 auto;
             padding: 20px;
         }
@@ -44,7 +52,7 @@
             text-align: center;
             margin-bottom: 30px;
             padding: 25px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, var(--primary), var(--light));
             color: white;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
@@ -67,33 +75,33 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 15px;
             position: relative;
             z-index: 2;
         }
 
         .logo img {
-            width: 100px;
-            height: 100px;
+            width: 150px;
+            height: 150px;
             border-radius: 50%;
             object-fit: cover;
-            border: 5px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
         h1 {
-            font-size: 2rem;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.6rem;
             margin-bottom: 10px;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+            text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.2);
             position: relative;
             z-index: 2;
         }
 
         .subtitle {
-            font-size: 1.1rem;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
             opacity: 0.9;
             position: relative;
             z-index: 2;
+            text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.2);
         }
 
         .form-container {
@@ -124,13 +132,16 @@
             font-size: 1rem;
             transition: var(--transition);
             background: #f8f9fa;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
         }
 
         .form-control:focus {
             outline: none;
             border-color: var(--primary);
             background: white;
-            box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.1);
+            box-shadow: 0 0 0 3px rgba(146, 108, 21, 0.1);
         }
 
         .form-control:invalid {
@@ -159,7 +170,7 @@
             outline: none;
             border-color: var(--primary);
             background: white;
-            box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.1);
+            box-shadow: 0 0 0 3px rgba(146, 108, 21, 0.1);
         }
 
         .input-label {
@@ -203,6 +214,8 @@
             cursor: pointer;
             transition: var(--transition);
             box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
         }
 
         .btn:hover {
@@ -241,24 +254,40 @@
             margin-bottom: 20px;
             text-align: center;
             font-weight: 500;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background-color: #f3c65e36;
+            color: #926C15;
+            font-family: 'Montserrat', sans-serif;
+            border: 1px solid rgba(146, 108, 21, 0.2);
         }
 
         .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background-color: #f3c65e36;
+            color: #926C15;
+            font-family: 'Montserrat', sans-serif;
+            border: 1px solid rgba(146, 108, 21, 0.2);
         }
 
         .alert-info {
-            background-color: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
+            background-color: #f3c65e36;
+            color: #926C15;
+            font-family: 'Montserrat', sans-serif;
+            border: 1px solid rgba(146, 108, 21, 0.2);
+        }
+
+        .alert-warning {
+            background-color: #f3c65e36;
+            color: #926C15;
+            font-family: 'Montserrat', sans-serif;
+            border: 1px solid rgba(146, 108, 21, 0.2);
         }
 
         footer {
@@ -275,17 +304,153 @@
             color: var(--danger);
         }
 
+        /* Name check indicator styles */
+        .name-check {
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(-5px);
+            transition: var(--transition);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.9rem;
+        }
+
+        .name-check.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .name-check.available {
+            color: var(--success);
+        }
+
+        .name-check.duplicate {
+            color: #d35400;
+        }
+
+        .name-check.error {
+            color: var(--danger);
+        }
+
+        .name-check i {
+            margin-right: 8px;
+        }
+
+        /* Custom select styling */
+        .select-container {
+            position: relative;
+        }
+
+        .select-container::after {
+            content: '\f078';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            pointer-events: none;
+        }
+
+        /* Responsive improvements */
         @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
             .container {
                 padding: 10px;
             }
             
+            header {
+                padding: 20px;
+            }
+            
             h1 {
-                font-size: 1.8rem;
+                font-size: 1.3rem;
+            }
+            
+            .subtitle {
+                font-size: 0.9rem;
             }
             
             .form-container {
                 padding: 20px;
+            }
+            
+            .logo img {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .alert {
+                font-size: 0.9rem;
+                padding: 12px;
+            }
+            
+            .name-check {
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.1rem;
+            }
+            
+            .subtitle {
+                font-size: 0.8rem;
+            }
+            
+            .form-container {
+                padding: 15px;
+            }
+            
+            .btn {
+                padding: 12px;
+                font-size: 1rem;
+            }
+            
+            .input-field {
+                padding: 14px 15px 8px;
+            }
+        }
+
+        /* Performance optimizations */
+        .performance-optimized {
+            will-change: transform, opacity;
+            transform: translateZ(0);
+        }
+
+        /* Focus styles for accessibility */
+        .btn:focus-visible,
+        .input-field:focus-visible,
+        .form-control:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            :root {
+                --primary: #000000;
+                --secondary: #333333;
+                --accent: #666666;
+            }
+            
+            .btn {
+                border: 2px solid var(--dark);
+            }
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
             }
         }
     </style>
@@ -295,11 +460,11 @@
         <header>
             <div class="logo-container">
                 <div class="logo">
-                    <img src="LOGO.png" alt="Church Logo">
+                    <img src="LOGO.png" alt="Church Logo" loading="eager">
                 </div>
             </div>
-            <h1>Church Anniversary Registration</h1>
-            <p class="subtitle">JOYFUL SOUND CHURCH - INTERNATIONAL</p>
+            <h1>JOYFUL SOUND CHURCH INTERNATIONAL</h1>
+            <p class="subtitle">CHURCH ANNIVERSARY REGISTRATION</p>
         </header>
 
         <div id="alertContainer"></div>
@@ -311,18 +476,24 @@
                         <input type="text" id="name" class="input-field" placeholder=" " required>
                         <label for="name" class="input-label">Full Name</label>
                     </div>
+                    <div id="nameCheck" class="name-check">
+                        <i class="fas fa-info-circle"></i>
+                        <span id="nameCheckText"></span>
+                    </div>
                 </div>
 
                 <div class="form-group">
-                    <select id="department" class="form-control">
-                        <option value="">Select Department</option>
-                        <option value="JSCI - Kids">JSCI - Kids</option>
-                        <option value="JSCI - Youth">JSCI - Youth</option>
-                        <option value="JSCI - Young Adult">JSCI - Young Adult</option>
-                        <option value="JSCI - Womens">JSCI - Womens</option>
-                        <option value="JSCI - Mens">JSCI - Mens</option>
-                        <option value="Guest">Guest</option>
-                    </select>
+                    <div class="select-container">
+                        <select id="department" class="form-control" required>
+                            <option value="">Select Department</option>
+                            <option value="JSCI - Kids">JSCI - Kids</option>
+                            <option value="JSCI - Youth">JSCI - Youth</option>
+                            <option value="JSCI - Young Adult">JSCI - Young Adult</option>
+                            <option value="JSCI - Womens">JSCI - Womens</option>
+                            <option value="JSCI - Mens">JSCI - Mens</option>
+                            <option value="Guest">Guest</option>
+                        </select>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn" id="submitBtn">
@@ -335,7 +506,7 @@
         </div>
 
         <footer>
-            <p>Church Anniversary Registration &copy; <span id="currentYear"></span></p>
+            <p>Joyful Sound Church - International &copy; <span id="currentYear"></span></p>
         </footer>
     </div>
 
@@ -344,7 +515,11 @@
     document.getElementById('currentYear').textContent = new Date().getFullYear();
 
     // Google Apps Script URL for registration
-    const REGISTRATION_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxcqzYcgrr_AXUq04rGhidi-Ar8Snf-ss4EvMCAh1xrGx63fTehoG770moAXbRla8Dh-A/exec';
+    const REGISTRATION_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzJpx1lBsBlQoHtRgsZQQNzQaBI7YAM0gSIQOwzOgjesZB4N98zDJjgFmud-iC0yPHiaQ/exec';
+
+    // Cache for name checks
+    const nameCheckCache = new Map();
+    const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
     // Show alert message
     function showAlert(message, type = 'info') {
@@ -352,7 +527,7 @@
         alertContainer.innerHTML = '';
         
         const alert = document.createElement('div');
-        alert.className = `alert alert-${type}`;
+        alert.className = `alert alert-${type} performance-optimized`;
         alert.innerHTML = message;
         alertContainer.appendChild(alert);
         
@@ -364,6 +539,101 @@
         }, timeout);
     }
 
+    // Name duplication check function
+    function checkNameAvailability(name) {
+        const nameCheck = document.getElementById('nameCheck');
+        const nameCheckText = document.getElementById('nameCheckText');
+        
+        // Reset the indicator
+        nameCheck.classList.remove('show', 'available', 'duplicate', 'error');
+        
+        if (!name || name.length < 2) {
+            return;
+        }
+        
+        // Check cache first
+        const cachedResult = nameCheckCache.get(name.toLowerCase());
+        if (cachedResult && (Date.now() - cachedResult.timestamp) < CACHE_DURATION) {
+            updateNameCheckUI(cachedResult.exists, name);
+            return;
+        }
+        
+        // Show loading state
+        nameCheck.classList.add('show');
+        nameCheckText.textContent = 'Checking name availability...';
+        
+        // Use JSONP to check if name exists in the spreadsheet
+        checkNameWithJSONP(name)
+            .then(response => {
+                if (response.status === 'success') {
+                    // Cache the result
+                    nameCheckCache.set(name.toLowerCase(), {
+                        exists: response.exists,
+                        timestamp: Date.now()
+                    });
+                    
+                    updateNameCheckUI(response.exists, name);
+                } else {
+                    throw new Error(response.message);
+                }
+            })
+            .catch(error => {
+                console.error('Name check error:', error);
+                nameCheck.classList.add('error');
+                nameCheckText.textContent = 'Error checking name availability. Please try again.';
+            });
+    }
+
+    // Update name check UI
+    function updateNameCheckUI(exists, name) {
+        const nameCheck = document.getElementById('nameCheck');
+        const nameCheckText = document.getElementById('nameCheckText');
+        
+        if (exists) {
+            nameCheck.classList.add('duplicate');
+            nameCheckText.innerHTML = `<strong>"${name}"</strong> is already registered. Please check if this is you or use a different name.`;
+        } else {
+            nameCheck.classList.add('available');
+            nameCheckText.textContent = 'Name is available for registration.';
+        }
+    }
+
+    // JSONP method to check name availability
+    function checkNameWithJSONP(name) {
+        return new Promise((resolve, reject) => {
+            // Create a unique callback name
+            const callbackName = 'name_check_callback_' + Math.round(100000 * Math.random());
+            
+            // Create script tag
+            const script = document.createElement('script');
+            const params = new URLSearchParams({
+                action: 'checkName',
+                name: name,
+                callback: callbackName
+            });
+            
+            script.src = `${REGISTRATION_SCRIPT_URL}?${params.toString()}`;
+            
+            // Define the callback function
+            window[callbackName] = function(response) {
+                // Clean up
+                delete window[callbackName];
+                document.body.removeChild(script);
+                resolve(response);
+            };
+            
+            // Add error handling
+            script.onerror = function() {
+                delete window[callbackName];
+                document.body.removeChild(script);
+                reject(new Error('Network error during name check'));
+            };
+            
+            // Execute the request
+            document.body.appendChild(script);
+        });
+    }
+
     // Handle form submission using JSONP technique
     document.getElementById('registrationForm').addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -373,6 +643,7 @@
         const btnLoading = document.getElementById('btnLoading');
         const nameInput = document.getElementById('name');
         const departmentSelect = document.getElementById('department');
+        const nameCheck = document.getElementById('nameCheck');
         
         // Get form values
         const name = nameInput.value.trim();
@@ -380,15 +651,29 @@
         
         // Basic validation
         if (!name) {
-            showAlert('❌ Please enter your name', 'error');
+            showAlert('Please enter your name', 'error');
             nameInput.focus();
             return;
         }
         
         if (!department) {
-            showAlert('❌ Please select a department', 'error');
+            showAlert('Please select a department', 'error');
             departmentSelect.focus();
             return;
+        }
+        
+        // Check if name is already registered (case-insensitive)
+        try {
+            const nameCheckResult = await checkNameWithJSONP(name);
+            if (nameCheckResult.exists) {
+                showAlert('This name is already registered. Please use a different name or check if you have already registered.', 'error');
+                nameCheck.classList.add('duplicate');
+                nameCheckText.innerHTML = `<strong>"${name}"</strong> is already registered. Please check if this is you or use a different name.`;
+                return;
+            }
+        } catch (error) {
+            console.error('Name check error:', error);
+            // Continue with registration even if name check fails
         }
         
         // Show loading state
@@ -402,7 +687,7 @@
             
         } catch (error) {
             console.error('Registration error:', error);
-            showAlert('❌ Registration failed: ' + error.message, 'error');
+            showAlert('Registration failed: ' + error.message, 'error');
         } finally {
             // Reset button state
             submitBtn.disabled = false;
@@ -434,8 +719,11 @@
                 document.body.removeChild(script);
                 
                 if (response.status === 'success') {
-                    showAlert('🎉 Registration successful! Thank you for registering.', 'success');
+                    showAlert('Registration successful! Thank you for registering.', 'success');
                     document.getElementById('registrationForm').reset();
+                    document.getElementById('nameCheck').classList.remove('show');
+                    // Clear cache for this name
+                    nameCheckCache.delete(name.toLowerCase());
                     resolve(response);
                 } else {
                     reject(new Error(response.message));
@@ -454,27 +742,28 @@
         });
     }
 
-    // Alternative: Use Google Forms if available
-    function submitWithGoogleForms(name, department) {
-        // This would require creating a Google Form and getting the form action URL
-        // For now, we'll use the JSONP method above
-        console.log('Google Forms method not implemented');
-    }
-
-    // Add input validation
+    // Add input validation and name check
     document.getElementById('name').addEventListener('input', function(e) {
         const value = e.target.value.trim();
+        
+        // Input validation
         if (value && !/^[a-zA-Z\s.'-]+$/.test(value)) {
             e.target.style.borderColor = 'var(--danger)';
         } else {
             e.target.style.borderColor = '';
         }
+        
+        // Check name availability after a short delay
+        clearTimeout(window.nameCheckTimeout);
+        window.nameCheckTimeout = setTimeout(() => {
+            checkNameAvailability(value);
+        }, 500);
     });
 
     // Test the connection when page loads
     window.addEventListener('load', function() {
         console.log('Registration system loaded');
-        showAlert('✅ Registration form is ready!', 'success');
+        showAlert('Registration form is ready!', 'success');
     });
 
     // Manual test function
@@ -489,7 +778,26 @@
             .then(result => console.log('Test successful:', result))
             .catch(error => console.error('Test failed:', error));
     };
-</script>
 
+    // Preload critical resources
+    function preloadCriticalResources() {
+        // Preload the logo
+        const logo = new Image();
+        logo.src = 'LOGO.png';
+    }
+
+    // Initialize the form
+    function init() {
+        preloadCriticalResources();
+        console.log('Registration form initialized');
+    }
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+    </script>
 </body>
 </html>
