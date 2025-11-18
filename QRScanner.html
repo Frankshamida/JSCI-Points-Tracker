@@ -6,7 +6,6 @@
     <title>QR Code Scanner - Church Points Tracker</title>
     <link rel="icon" type="image/x-icon" href="LOGO.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/minified/html5-qrcode.min.js"></script>
     <style>
         :root {
             --primary: #926C15;
@@ -170,8 +169,9 @@
             justify-content: center;
         }
 
-        #qr-reader img {
-            max-width: 100%;
+        #qr-reader video {
+            width: 100%;
+            height: auto;
             border-radius: 8px;
         }
 
@@ -179,6 +179,7 @@
             color: #6c757d;
             font-style: italic;
             padding: 20px;
+            text-align: center;
         }
 
         .scanner-controls {
@@ -397,6 +398,13 @@
             display: none;
         }
 
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: var(--primary);
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
@@ -477,6 +485,9 @@
                     <div class="scanner-placeholder">
                         <i class="fas fa-camera fa-2x" style="margin-bottom: 10px;"></i>
                         <div>Camera scanner will appear here</div>
+                        <div id="loading" class="loading">
+                            <i class="fas fa-spinner fa-spin"></i> Loading scanner...
+                        </div>
                     </div>
                 </div>
                 
@@ -537,14 +548,44 @@
         document.getElementById('currentYear').textContent = new Date().getFullYear();
 
         // QR Code Scanner variables
-        let html5QrcodeScanner;
+        let html5QrcodeScanner = null;
         let isScanning = false;
         let scanHistory = JSON.parse(localStorage.getItem('scanHistory')) || [];
         let currentCameraId = null;
 
+        // Load the QR scanner library dynamically
+        function loadQrScanner() {
+            return new Promise((resolve, reject) => {
+                // Check if already loaded
+                if (window.Html5Qrcode) {
+                    resolve();
+                    return;
+                }
+
+                // Show loading
+                document.getElementById('loading').style.display = 'block';
+
+                // Create script element
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/minified/html5-qrcode.min.js';
+                script.onload = () => {
+                    document.getElementById('loading').style.display = 'none';
+                    console.log('QR Scanner library loaded successfully');
+                    resolve();
+                };
+                script.onerror = () => {
+                    document.getElementById('loading').style.display = 'none';
+                    reject(new Error('Failed to load QR scanner library'));
+                };
+                document.head.appendChild(script);
+            });
+        }
+
         // Initialize the scanner
         async function initScanner() {
             try {
+                await loadQrScanner();
+                
                 // Get available cameras
                 const cameras = await Html5Qrcode.getCameras();
                 const cameraSelect = document.getElementById('cameraSelect');
@@ -580,15 +621,28 @@
                 
                 // Display previous scan history
                 displayScanHistory();
+                
+                console.log('Scanner initialized successfully');
+                
             } catch (err) {
                 console.error('Error initializing scanner:', err);
-                showVerificationStatus(false, "Error accessing camera: " + err.message);
+                let errorMessage = "Scanner initialization failed: " + err.message;
+                
+                if (err.message.includes('Failed to load')) {
+                    errorMessage = "Failed to load QR scanner. Please check your internet connection.";
+                }
+                
+                showVerificationStatus(false, errorMessage);
             }
         }
 
         // Start scanning
         async function startScanner() {
             try {
+                if (!window.Html5Qrcode) {
+                    await loadQrScanner();
+                }
+
                 if (!currentCameraId) {
                     const cameras = await Html5Qrcode.getCameras();
                     if (cameras && cameras.length) {
@@ -629,6 +683,8 @@
                     errorMessage = "Camera permission denied. Please allow camera access and try again.";
                 } else if (err.message.includes('NotFoundError')) {
                     errorMessage = "No camera found on this device.";
+                } else if (err.message.includes('NotAllowedError')) {
+                    errorMessage = "Camera access denied. Please allow camera permissions in your browser settings.";
                 }
                 
                 showVerificationStatus(false, errorMessage);
@@ -636,6 +692,10 @@
                 // Reset scanner state
                 isScanning = false;
                 updateScannerControls();
+                
+                // Reset scanner view
+                const qrReader = document.getElementById('qr-reader');
+                qrReader.innerHTML = '<div class="scanner-placeholder"><i class="fas fa-camera fa-2x" style="margin-bottom: 10px;"></i><div>Camera scanner will appear here</div></div>';
             }
         }
 
@@ -672,9 +732,6 @@
             
             // Show success message
             showVerificationStatus(true, "Participant verified successfully!");
-            
-            // Optional: Stop scanner after successful scan to prevent multiple scans
-            // setTimeout(() => stopScanner(), 1000);
         }
 
         // Handle scan failure
@@ -826,6 +883,14 @@
             console.log("- Point camera at QR code containing participant name");
             console.log("- Press Ctrl+T to test with random name");
             console.log("- Scan history is saved automatically");
+        });
+
+        // Fallback: If still having issues, provide alternative
+        window.addEventListener('error', function(e) {
+            if (e.message.includes('Html5Qrcode') || e.message.includes('html5-qrcode')) {
+                console.error('QR Scanner library failed to load');
+                showVerificationStatus(false, "QR Scanner failed to load. Please refresh the page.");
+            }
         });
     </script>
 </body>
