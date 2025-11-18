@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner - Church Points Tracker</title>
+    <link rel="icon" type="image/x-icon" href="LOGO.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/minified/html5-qrcode.min.js"></script>
+    <style>
+        :root {
+            --primary: #926C15; /* SATIN SHEEN - GOLDEN BROWN */
+            --secondary: #C9980B; /* MIKADO - GOLD */
+            --accent: #FFC300; /* NAPLES - YELLOW */
+            --light-yellow: #FFD235; /* YELLOW */
+            --bright-yellow: #FFE169; /* SUNGLOW */
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #28a745;
+            --danger: #dc3545;
+            --border-radius: 12px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, var(--primary), var(--light));
+            color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            z-index: 1;
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .subtitle {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+            letter-spacing: 10px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent), var(--bright-yellow));
+            color: var(--dark);
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 195, 0, 0.4);
+            margin-top: 10px;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 195, 0, 0.6);
+        }
+
+        .scanner-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .scanner-section {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 25px;
+            text-align: center;
+        }
+
+        .scanner-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        #qr-reader {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            border: 2px solid var(--primary);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        .scanner-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .scanner-btn {
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, var(--success), #20c997);
+            color: white;
+        }
+
+        .stop-btn {
+            background: linear-gradient(135deg, var(--danger), #e4606d);
+            color: white;
+        }
+
+        .scanner-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .scanner-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .result-section {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 25px;
+            text-align: center;
+        }
+
+        .result-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .scanned-name-container {
+            background: #f8f9fa;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px dashed #dee2e6;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .scanned-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+
+        .placeholder-text {
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .verification-status {
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-top: 20px;
+            font-weight: 600;
+            display: none;
+        }
+
+        .status-success {
+            background: rgba(40, 167, 69, 0.1);
+            border: 2px solid var(--success);
+            color: var(--success);
+        }
+
+        .status-error {
+            background: rgba(220, 53, 69, 0.1);
+            border: 2px solid var(--danger);
+            color: var(--danger);
+        }
+
+        .scan-history {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 25px;
+        }
+
+        .history-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .history-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-name {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .history-time {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .clear-history {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        .clear-history:hover {
+            background: #c82333;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: var(--dark);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .subtitle {
+                font-size: 0.9rem;
+                letter-spacing: 5px;
+            }
+            
+            .logo img {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .scanner-section, .result-section, .scan-history {
+                padding: 20px;
+            }
+            
+            .scanned-name {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (min-width: 992px) {
+            .scanner-container {
+                flex-direction: row;
+                align-items: flex-start;
+                justify-content: center;
+            }
+            
+            .scanner-section, .result-section, .scan-history {
+                flex: 1;
+                max-width: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <div class="logo">
+                    <img src="LOGO.png" alt="Church Logo">
+                </div>
+            </div>
+            <div class="header-content">
+                <h1>JOYFUL SOUND CHURCH - INTERNATIONAL</h1>
+                <p class="subtitle">QR SCANNER</p>
+                <a href="index.html" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> Back to Points Tracker
+                </a>
+            </div>
+        </header>
+
+        <div class="scanner-container">
+            <div class="scanner-section">
+                <h2 class="scanner-title">
+                    <i class="fas fa-qrcode"></i> QR Code Scanner
+                </h2>
+                <div id="qr-reader"></div>
+                <div class="scanner-controls">
+                    <button id="startScanner" class="scanner-btn start-btn">
+                        <i class="fas fa-play"></i> Start Scanner
+                    </button>
+                    <button id="stopScanner" class="scanner-btn stop-btn" disabled>
+                        <i class="fas fa-stop"></i> Stop Scanner
+                    </button>
+                </div>
+            </div>
+
+            <div class="result-section">
+                <h2 class="result-title">
+                    <i class="fas fa-user-check"></i> Scanned Participant
+                </h2>
+                <div class="scanned-name-container">
+                    <div class="placeholder-text">Scan a QR code to see participant name</div>
+                    <div id="scannedName" class="scanned-name"></div>
+                </div>
+                <div id="verificationStatus" class="verification-status">
+                    <i class="fas fa-check-circle"></i> <span id="statusText">Participant verified successfully!</span>
+                </div>
+            </div>
+
+            <div class="scan-history">
+                <h2 class="history-title">
+                    <i class="fas fa-history"></i> Scan History
+                </h2>
+                <div id="historyList" class="history-list">
+                    <div class="placeholder-text" style="text-align: center; padding: 20px;">
+                        No scans yet
+                    </div>
+                </div>
+                <button id="clearHistory" class="clear-history">
+                    <i class="fas fa-trash"></i> Clear History
+                </button>
+            </div>
+        </div>
+
+        <footer>
+            <p>Joyful Sound Church - International &copy; <span id="currentYear"></span></p>
+        </footer>
+    </div>
+
+    <script>
+        // Set current year in footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // QR Code Scanner variables
+        let html5QrcodeScanner;
+        let isScanning = false;
+        let scanHistory = JSON.parse(localStorage.getItem('scanHistory')) || [];
+
+        // Initialize the scanner
+        function initScanner() {
+            html5QrcodeScanner = new Html5Qrcode("qr-reader");
+            
+            // Display previous scan history
+            displayScanHistory();
+        }
+
+        // Start scanning
+        async function startScanner() {
+            try {
+                // Check if camera is available
+                const cameras = await Html5Qrcode.getCameras();
+                if (cameras && cameras.length) {
+                    const cameraId = cameras[0].id;
+                    
+                    // Start the scanner
+                    await html5QrcodeScanner.start(
+                        cameraId,
+                        {
+                            fps: 10,
+                            qrbox: { width: 250, height: 250 }
+                        },
+                        onScanSuccess,
+                        onScanFailure
+                    );
+                    
+                    isScanning = true;
+                    updateScannerControls();
+                    console.log("QR Scanner started successfully");
+                } else {
+                    alert("No camera found. Please check your device permissions.");
+                }
+            } catch (err) {
+                console.error("Error starting scanner:", err);
+                alert("Error starting scanner: " + err.message);
+            }
+        }
+
+        // Stop scanning
+        async function stopScanner() {
+            try {
+                await html5QrcodeScanner.stop();
+                isScanning = false;
+                updateScannerControls();
+                console.log("QR Scanner stopped");
+            } catch (err) {
+                console.error("Error stopping scanner:", err);
+            }
+        }
+
+        // Handle successful scan
+        function onScanSuccess(decodedText, decodedResult) {
+            console.log("QR Code scanned:", decodedText);
+            
+            // Display the scanned name
+            displayScannedName(decodedText);
+            
+            // Add to scan history
+            addToHistory(decodedText);
+            
+            // Show success message
+            showVerificationStatus(true, "Participant verified successfully!");
+            
+            // Optional: Stop scanner after successful scan
+            // stopScanner();
+        }
+
+        // Handle scan failure
+        function onScanFailure(error) {
+            // This is expected to be called often as it will fail when no QR code is visible
+            // We don't need to handle this unless we want to show specific errors
+        }
+
+        // Display scanned name
+        function displayScannedName(name) {
+            const scannedNameElement = document.getElementById('scannedName');
+            const placeholderElement = scannedNameElement.previousElementSibling;
+            
+            // Hide placeholder and show name
+            placeholderElement.style.display = 'none';
+            scannedNameElement.textContent = name;
+            scannedNameElement.style.display = 'block';
+        }
+
+        // Show verification status
+        function showVerificationStatus(isSuccess, message) {
+            const statusElement = document.getElementById('verificationStatus');
+            const statusText = document.getElementById('statusText');
+            
+            statusText.textContent = message;
+            statusElement.className = `verification-status ${isSuccess ? 'status-success' : 'status-error'}`;
+            statusElement.style.display = 'block';
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                statusElement.style.display = 'none';
+            }, 3000);
+        }
+
+        // Add to scan history
+        function addToHistory(name) {
+            const timestamp = new Date().toLocaleString();
+            scanHistory.unshift({ name, timestamp });
+            
+            // Keep only last 20 scans
+            if (scanHistory.length > 20) {
+                scanHistory = scanHistory.slice(0, 20);
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('scanHistory', JSON.stringify(scanHistory));
+            
+            // Update display
+            displayScanHistory();
+        }
+
+        // Display scan history
+        function displayScanHistory() {
+            const historyList = document.getElementById('historyList');
+            
+            if (scanHistory.length === 0) {
+                historyList.innerHTML = '<div class="placeholder-text" style="text-align: center; padding: 20px;">No scans yet</div>';
+                return;
+            }
+            
+            historyList.innerHTML = scanHistory.map(item => `
+                <div class="history-item">
+                    <div class="history-name">${item.name}</div>
+                    <div class="history-time">${item.timestamp}</div>
+                </div>
+            `).join('');
+        }
+
+        // Clear scan history
+        function clearHistory() {
+            if (confirm("Are you sure you want to clear the scan history?")) {
+                scanHistory = [];
+                localStorage.removeItem('scanHistory');
+                displayScanHistory();
+            }
+        }
+
+        // Update scanner control buttons
+        function updateScannerControls() {
+            const startBtn = document.getElementById('startScanner');
+            const stopBtn = document.getElementById('stopScanner');
+            
+            if (isScanning) {
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+            } else {
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initScanner();
+            
+            // Add event listeners
+            document.getElementById('startScanner').addEventListener('click', startScanner);
+            document.getElementById('stopScanner').addEventListener('click', stopScanner);
+            document.getElementById('clearHistory').addEventListener('click', clearHistory);
+            
+            // Test with sample data (for demonstration)
+            document.addEventListener('keypress', function(e) {
+                // Press 'T' key to test with sample data
+                if (e.key === 't' || e.key === 'T') {
+                    const testNames = [
+                        "John Smith", 
+                        "Maria Garcia", 
+                        "David Johnson", 
+                        "Sarah Williams", 
+                        "Michael Brown"
+                    ];
+                    const randomName = testNames[Math.floor(Math.random() * testNames.length)];
+                    displayScannedName(randomName);
+                    addToHistory(randomName);
+                    showVerificationStatus(true, "Participant verified successfully!");
+                }
+            });
+        });
+    </script>
+</body>
+</html>
