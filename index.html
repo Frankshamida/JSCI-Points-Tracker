@@ -7,9 +7,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #4a6fa5;
-            --secondary: #6b8cbc;
-            --accent: #ffb347;
+            --primary: #926C15; /* SATIN SHEEN - GOLDEN BROWN */
+            --secondary: #C9980B; /* MIKADO - GOLD */
+            --accent: #FFC300; /* NAPLES - YELLOW */
+            --light-yellow: #FFD235; /* YELLOW */
+            --bright-yellow: #FFE169; /* SUNGLOW */
             --light: #f8f9fa;
             --dark: #343a40;
             --success: #28a745;
@@ -27,7 +29,7 @@
         }
 
         body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            background: linear-gradient(135deg, #fef9e7 0%, #fcf3cf 100%);
             color: var(--dark);
             line-height: 1.6;
             min-height: 100vh;
@@ -43,7 +45,7 @@
             text-align: center;
             margin-bottom: 30px;
             padding: 25px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, var(--primary), var(--light));
             color: white;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
@@ -80,19 +82,41 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+
         h1 {
             font-size: 2.5rem;
             margin-bottom: 10px;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
-            position: relative;
-            z-index: 2;
         }
 
         .subtitle {
             font-size: 1.2rem;
             opacity: 0.9;
-            position: relative;
-            z-index: 2;
+            margin-bottom: 20px;
+        }
+
+        .register-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent), var(--bright-yellow));
+            color: var(--dark);
+            padding: 12px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(255, 195, 0, 0.4);
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+
+        .register-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 195, 0, 0.6);
         }
 
         .search-container {
@@ -187,7 +211,7 @@
             border-radius: 20px;
             font-weight: 700;
             font-size: 1.1rem;
-            box-shadow: 0 3px 8px rgba(74, 111, 165, 0.3);
+            box-shadow: 0 3px 8px rgba(146, 108, 21, 0.3);
         }
 
         .card-body {
@@ -198,7 +222,7 @@
         }
 
         .points-section {
-            background: #f8fafc;
+            background: #fef9e7;
             padding: 15px;
             border-radius: 8px;
             text-align: center;
@@ -232,7 +256,7 @@
         .letter-item {
             text-align: center;
             padding: 10px;
-            background: #f8fafc;
+            background: #fef9e7;
             border-radius: 8px;
             position: relative;
             overflow: hidden;
@@ -350,13 +374,31 @@
             margin-left: 10px;
         }
 
+        .mobile-title {
+            display: none;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
             }
             
-            h1 {
-                font-size: 2rem;
+            .desktop-title {
+                display: none;
+            }
+            
+            .mobile-title {
+                display: block;
+            }
+            
+            .mobile-title .line1 {
+                font-size: 1.8rem;
+                margin-bottom: 5px;
+            }
+            
+            .mobile-title .line2 {
+                font-size: 1.5rem;
+                opacity: 0.9;
             }
             
             .logo img {
@@ -387,8 +429,20 @@
                     <img src="LOGO.png" alt="Church Logo">
                 </div>
             </div>
-            <h1>JOYFUL SOUND CHURCH - INTERNATIONAL</h1>
-            <p class="subtitle">POINTS TRACKER</p>
+            <div class="header-content">
+                <div class="desktop-title">
+                    <h1>JOYFUL SOUND CHURCH - INTERNATIONAL</h1>
+                    <p class="subtitle">POINTS TRACKER</p>
+                </div>
+                <div class="mobile-title">
+                    <div class="line1">JOYFUL SOUND CHURCH</div>
+                    <div class="line2">INTERNATIONAL</div>
+                    <p class="subtitle">POINTS TRACKER</p>
+                </div>
+                <a href="Registration.html" class="register-btn">
+                    <i class="fas fa-user-plus"></i> Register Now
+                </a>
+            </div>
         </header>
 
         <div class="search-container">
@@ -744,4 +798,4 @@
         };
     </script>
 </body>
-</html>`
+</html>
